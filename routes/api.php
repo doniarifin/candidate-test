@@ -4,9 +4,31 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\LayupController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 */
+
+// api suppliers
+Route::get('/suppliers', [SupplierController::class, 'index']);
+Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
+Route::post('/suppliers', [SupplierController::class, 'store']);
+Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
+Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
+
+//export suppliers
+Route::post('/suppliers/export', [SupplierController::class, 'export']);
+
+//layup api
+Route::get('/layups', [LayupController::class, 'index']);
+Route::get('/layups/{id}', [LayupController::class, 'show']);
+Route::post('/layups', [LayupController::class, 'store']);
+Route::put('/layups/{id}', [LayupController::class, 'update']);
+Route::delete('/layups/{id}', [LayupController::class, 'destroy']);
+
+//export layups
+Route::post('/layups/export', [LayupController::class, 'export']);
