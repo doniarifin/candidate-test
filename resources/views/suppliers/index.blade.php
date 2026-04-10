@@ -178,97 +178,54 @@
                 </div>
     
                 <form @submit.prevent="submitCreate" class="flex flex-col max-h-[70vh]">
-
                     <div class="p-6 space-y-4 overflow-y-auto">
-                        <div class="mb-4">
-                              <label class="block text-sm text-gray-600 mb-1">
-                                  Supplier Name
-                              </label>
-                              <input 
-                                  type="text" 
-                                  name="name"
-                                  placeholder="e.g. PT Kayu Jaya"
-                                  x-model="form.name"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none">
-                                <p class="text-red-500 text-sm" x-text="errors?.name?.[0]"></p>
-                          </div>
-
-                          <!-- <div class="mb-4">
-                              <label class="block text-sm text-gray-600 mb-1">
-                                  Supplier Code
-                              </label>
-                              <input 
-                                  type="text" 
-                                  name="code"
-                                  placeholder="e.g. SUP-001"
-                                  x-model="form.code"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none">
-                                      <p class="text-red-500 text-sm" x-text="errors?.code?.[0]"></p>
-                          </div> -->
-
+                          <x-input
+                            label="Supplier Name"
+                            name="name"
+                            required="true"
+                            placeholder="e.g. PT Kayu Jaya"
+                            :model="'form.name'"
+                          >
+                          </x-input>
                           <x-input
                             label="Supplier Code"
+                            required="true"
                             name="code"
                             placeholder="e.g. SUP-001"
                             :model="'form.code'"
                           >
                           </x-input>
+                          <x-input
+                            label="Supplier Email"
+                            name="email"
+                            placeholder="e.g. test@example.com"
+                            :model="'form.email'"
+                          >
+                          </x-input>
+                          <x-input
+                            label="Supplier Location"
+                            name="location"
+                            placeholder="e.g. Jakarta, Indonesia"
+                            :model="'form.location'"
+                          >
+                          </x-input>
+                          <x-input
+                            label="Supplier Certifications"
+                            name="certifications"
+                            placeholder="e.g. SPF No. 12"
+                            :model="'form.certifications'"
+                          >
+                          </x-input>
 
-                          <div class="mb-4">
-                              <label class="block text-sm text-gray-600 mb-1">
-                                  Supplier Email
-                              </label>
-                              <input 
-                                  type="text" 
-                                  name="email"
-                                  placeholder="e.g. SUP-001"
-                                  x-model="form.email"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none">
-                          </div>
-
-                          <div class="mb-4">
-                              <label class="block text-sm text-gray-600 mb-1">
-                                  Supplier Location
-                              </label>
-                              <input 
-                                  type="text" 
-                                  name="location"
-                                  placeholder="e.g. Jakarta, Indonesia"
-                                  x-model="form.location"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none">
-                          </div>
-                          <div class="mb-4">
-                              <label class="block text-sm text-gray-600 mb-1">
-                                  Supplier Certifications
-                              </label>
-                              <input 
-                                  type="text" 
-                                  name="certifications"
-                                  placeholder="e.g. SPF No. 12"
-                                  x-model="form.certifications"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none">
-                          </div>
-                          <div class="mb-4">
-                            <label class="block text-sm text-gray-600 mb-1">
-                                Supplier Status
-                            </label>
-
-                            <select 
-                                name="status"
-                                x-model="form.status"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                                      focus:ring-2 focus:ring-green-500 focus:outline-none bg-white"
-                            >
-                                <!-- <option value="">Select status</option> -->
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                          </div>
+                        <x-input-select 
+                            label="Supplier Status"
+                            name="status"
+                            model="form.status"
+                            :options="[
+                                'active' => 'Active',
+                                'inactive' => 'Inactive'
+                            ]"
+                        />
                     </div>
 
                     <div class="flex justify-end gap-2 p-4 border-t">
@@ -289,7 +246,7 @@
             </x-modal>
 
             <!-- modal delete -->
-             <x-modal name="delete-supplier" maxWidth="md" :closeable="false">
+             <x-modal name="delete-modal" maxWidth="md" :closeable="false">
 
                 <div class="flex items-center justify-between px-6 py-4 border-b">
                     <h2 class="text-lg font-semibold text-gray-800">

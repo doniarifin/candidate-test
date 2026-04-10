@@ -1,21 +1,25 @@
 @props([
     'label' => '',
     'name',
-    'placeholder' => '',
+    'placeholder' => null,
     'type' => 'text',
     'disabled' => false,
-    'model' => null
+    'required' => false,
+    'model' => null,
 ])
 
-<div class="mb-4">
+<div >
     <label class="block text-sm text-gray-600 mb-1">
         {{ $label }}
+        @if($required)
+            <span class="text-red-500">*</span>
+        @endif
     </label>
 
     <input 
         type="{{ $type }}"
         name="{{ $name }}"
-        placeholder="{{ $placeholder }}"
+        placeholder="{{ $placeholder ?? 'Type ' . $label . '..' }}"
         x-model="{{ $model }}"
         @disabled($disabled)
         {{ $attributes->merge([

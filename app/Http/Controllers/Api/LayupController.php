@@ -56,13 +56,13 @@ class LayupController extends Controller
         $layups = Layup::findOrFail($id);
 
         $validated = $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:ss,code,' . $id,
+            'code' => 'required|string|max:50' . $id,
 
-            'email' => 'nullable|email|max:255',
-            'location' => 'nullable|string|max:255',
-            'certifications' => 'nullable|string|max:255',
-            'status' => 'nullable|in:active,inactive',
+            'grade' => 'nullable|string|max:255',
+            'revision' => 'nullable|string|max:255',
+            'status' => 'nullable|in:draft,active,archived',
         ]);
 
         $layups->update($validated);
@@ -92,34 +92,32 @@ class LayupController extends Controller
             'ids.*' => 'exists:layups,id'
         ]);
 
-        $layups = Layup::with('layers')
+        $layups = Layup::with(['layers', 'supplier'])
             ->whereIn('id', $request->ids)
             ->get();
 
-        $data = $layups->map(function ($supplier) {
+        $data = $layups->map(function ($layup) {
             return [
+                'id' => $layup->id,
+                'name' => $layup->name,
+                'code' => $layup->code,
+                'grade' => $layup->grade,
+                'revision' => $layup->revision,
+                'status' => $layup->status,
+
+                // supplier info
                 'supplier' => [
-                    'id' => $supplier->id,
-                    'name' => $supplier->name,
-                    'code' => $supplier->code,
-                    'email' => $supplier->email,
-                    'location' => $supplier->location,
-                    'certifications' => $supplier->certifications,
-                    'status' => $supplier->status,
+                    'id' => $layup->supplier?->id,
+                    'name' => $layup->supplier?->name,
+                    'code' => $layup->supplier?->code,
                 ],
-                'layups' => $supplier->layups->map(function ($layup) {
+
+                // layers
+                'layers' => $layup->layers->map(function ($layer) {
                     return [
-                        'id' => $layup->id,
-                        'name' => $layup->name,
-                        'code' => $layup->code,
-                        'layers' => $layup->layers->map(function ($layer) {
-                            return [
-                                'layer_order' => $layer->layer_order,
-                                'thickness' => $layer->thickness,
-                                'width' => $layer->width,
-                                // 'angle' => $layer->angle,
-                            ];
-                        })
+                        'layer_order' => $layer->layer_order,
+                        'thickness' => $layer->thickness,
+                        'width' => $layer->width,
                     ];
                 })
             ];

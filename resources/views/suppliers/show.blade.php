@@ -83,7 +83,7 @@
 
               <div class="flex gap-2">
                   <button class="px-3 py-2 border rounded-lg text-sm">Import</button>
-                  <button class="px-3 py-2 border rounded-lg text-sm">Export</button>
+                  <button @click="exportLayups(selectedIds)" class="px-3 py-2 border rounded-lg text-sm">Export</button>
                   <button @click="openModal('add-layup')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">
                       + Add Layup
                   </button>
@@ -149,8 +149,8 @@
                               <span class="px-2 py-1 bg-gray-200 rounded" x-text="layup.ply_count">
                               </span>
                             </td>
-                            <td class="p-2 text-center" x-text="layup.grade"></td>
-                            <td class="p-2 text-center" x-text="layup.revision"></td>
+                            <td class="p-2 text-center" x-text="layup.grade ?? '-' "></td>
+                            <td class="p-2 text-center" x-text="layup.revision ?? '-' "></td>
                             <td class="p-2 text-center">
                               <span 
                                   class="px-3 py-1 rounded-full"
@@ -167,12 +167,22 @@
                               ></span>
                           </td>
                             <td class="p-2 text-center flex gap-4 justify-center ">
-                                <!-- Edit Button -->
+                              
                                 <button
                                 >
                                     <a :href="'/suppliers/' + supplier.id" >
                                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </a>
+                                </button>
+
+                                <!-- Edit Button -->
+                                <button
+                                  @click="
+                                        openEditModal('edit-layup')
+                                        editData = JSON.parse(JSON.stringify(layup))
+                                    "
+                                >
+                                  <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
                                 <!-- Delete Button -->
@@ -189,7 +199,7 @@
                     </template>
                     <template x-if="supplier?.layups.length === 0">
                       <tr>
-                          <td colspan="7" class="text-center p-4 text-gray-500">
+                          <td colspan="9" class="text-center p-4 text-gray-500">
                               No layups found
                           </td>
                       </tr>
@@ -204,7 +214,7 @@
       <x-modal name="edit-supplier" maxWidth="md" :closeable="false">
         <div class="flex items-center justify-between px-6 py-4 border-b">
             <h2 class="text-lg font-semibold text-gray-800">
-                Add Supplier
+                Edit Supplier
             </h2>
 
             <button 
@@ -223,85 +233,53 @@
                   @csrf
                   <!-- @method('PUT') -->
 
-                  <div class="mb-4">
-                      <label class="block text-sm text-gray-600 mb-1">
-                          Supplier Name
-                      </label>
-                      <input 
-                          type="text" 
-                          name="name"
-                          placeholder="e.g. PT Kayu Jaya"
-                          x-model="editData.name"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none">
-                  </div>
+                  <x-input
+                    class="mb-4"
+                    label="Supplier Name"
+                    name="name"
+                    required="true"
+                    placeholder="e.g. PT Kayu Jaya"
+                    :model="'editData.name'"
+                  />
+                  <x-input
+                    class="mb-4"
+                    label="Supplier Code"
+                    name="code"
+                    required="true"
+                    placeholder="e.g. PT Kayu Jaya"
+                    :model="'editData.code'"
+                  />
+                  <x-input
+                    class="mb-4"
+                    label="Supplier Email"
+                    name="email"
+                    placeholder="e.g. PT Kayu Jaya"
+                    :model="'editData.email'"
+                  />
+                  <x-input
+                    class="mb-4"
+                    label="Supplier Location"
+                    name="location"
+                    placeholder="e.g. PT Kayu Jaya"
+                    :model="'editData.location'"
+                  />
+                  <x-input
+                    class="mb-4"
+                    label="Supplier Certifications"
+                    name="certifications"
+                    placeholder="e.g. PT Kayu Jaya"
+                    :model="'editData.certifications'"
+                  />
 
-                  <div class="mb-4">
-                      <label class="block text-sm text-gray-600 mb-1">
-                          Supplier Code
-                      </label>
-                      <input 
-                          type="text" 
-                          name="code"
-                          placeholder="e.g. SUP-001"
-                          x-model="editData.code"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none">
-                  </div>
-
-                  <div class="mb-4">
-                      <label class="block text-sm text-gray-600 mb-1">
-                          Supplier Email
-                      </label>
-                      <input 
-                          type="text" 
-                          name="email"
-                          placeholder="e.g. SUP-001"
-                          x-model="editData.email"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none">
-                  </div>
-
-                  <div class="mb-4">
-                      <label class="block text-sm text-gray-600 mb-1">
-                          Supplier Location
-                      </label>
-                      <input 
-                          type="text" 
-                          name="location"
-                          placeholder="e.g. Jakarta, Indonesia"
-                          x-model="editData.location"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none">
-                  </div>
-                  <div class="mb-4">
-                      <label class="block text-sm text-gray-600 mb-1">
-                          Supplier Certifications
-                      </label>
-                      <input 
-                          type="text" 
-                          name="certifications"
-                          placeholder="e.g. SPF No. 12"
-                          x-model="editData.certifications"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none">
-                  </div>
-                  <div class="mb-4">
-                    <label class="block text-sm text-gray-600 mb-1">
-                        Supplier Status
-                    </label>
-
-                    <select 
-                        name="status"
-                        x-model="editData.status"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                              focus:ring-2 focus:ring-green-500 focus:outline-none bg-white"
-                    >
-                        <!-- <option value="">Select status</option> -->
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
+                  <x-input-select 
+                      label="Supplier Status"
+                      name="status"
+                      model="editData.status"
+                      :options="[
+                          'active' => 'Active',
+                          'inactive' => 'Inactive'
+                      ]"
+                  />
 
                   <div class="mb-4">
                       <label class="block text-sm text-gray-600 mb-1">
@@ -361,76 +339,42 @@
           <div class="p-6 overflow-y-auto">
             @csrf
 
-            <div class="mb-4">
-                <label class="block text-sm text-gray-600 mb-1">
-                    Name
-                </label>
-                <input 
-                    type="text" 
-                    name="name"
-                    placeholder="e.g. Standard 3-Ply Wall"
-                    x-model="layup.name"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                        focus:ring-2 focus:ring-green-500 focus:outline-none">
-                <p class="text-red-500 text-sm" x-text="errors?.name?.[0]"></p>
-                
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm text-gray-600 mb-1">
-                    Code
-                </label>
-                <input 
-                    type="text" 
-                    name="code"
-                    placeholder="e.g. L-2021-A"
-                    x-model="layup.code"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                        focus:ring-2 focus:ring-green-500 focus:outline-none">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm text-gray-600 mb-1">
-                    Grade
-                </label>
-                <input 
-                    type="text" 
-                    name="grade"
-                    placeholder="e.g. Spruce No. 1"
-                    x-model="layup.grade"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                        focus:ring-2 focus:ring-green-500 focus:outline-none">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm text-gray-600 mb-1">
-                    Revision
-                </label>
-                <input 
-                    type="text" 
-                    name="revision"
-                    placeholder="e.g. Revision 5"
-                    x-model="layup.revision"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                        focus:ring-2 focus:ring-green-500 focus:outline-none">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm text-gray-600 mb-1">
-                  Status
-              </label>
-
-              <select 
-                  name="status"
-                  x-model="layup.status"
-                  class="w-full border border-gray-300 rounded-lg px-3 py-2 
-                        focus:ring-2 focus:ring-green-500 focus:outline-none bg-white"
-              >
-                  <!-- <option value="">Select status</option> -->
-                  <option value="draft">Draft</option>
-                  <option value="active">Active</option>
-                  <option value="archived">Archived</option>
-              </select>
-            </div>
+            <x-input
+              required="true"
+              class="mb-4"
+              label="Name"
+              name="name"
+              :model="'layup.name'"
+            />
+            <x-input
+              required="true"
+              class="mb-4"
+              label="Code"
+              name="code"
+              :model="'layup.code'"
+            />
+            <x-input
+              class="mb-4"
+              label="Grade"
+              name="grade"
+              :model="'layup.grade'"
+            />
+            <x-input
+              class="mb-4"
+              label="Revision"
+              name="revision"
+              :model="'layup.revision'"
+            />
+            <x-input-select 
+              label="Status"
+              name="status"
+              model="layup.status"
+              :options="[
+                  'draft' => 'Draft',
+                  'active' => 'Active',
+                  'archived' => 'Archived'
+              ]"
+            />
           </div>
 
           <!-- footer -->
@@ -452,6 +396,140 @@
           </div>
         </form>
       </x-modal>
+
+      <!-- modal edit layup -->
+      <x-modal name="edit-layup" maxWidth="md" :closeable="false">
+        <div class="flex items-center justify-between px-6 py-4 border-b">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800">
+                Edit Layup
+            </h2>
+              <span class="text-sm" x-text="supplier?.name"></span>
+          </div>
+
+            <button 
+                type="button" 
+                @click="$dispatch('close')"
+                class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fa-solid fa-x"></i>
+            </button>
+        </div>
+
+        <form @submit.prevent="updateLayup" class="flex flex-col max-h-[70vh]">
+          <!-- body -->
+          <div class="p-6 overflow-y-auto">
+            @csrf
+
+            <x-input
+              required="true"
+              class="mb-4"
+              label="Name"
+              name="name"
+              model="editData.name"
+            />
+            <x-input
+              required="true"
+              class="mb-4"
+              label="Code"
+              name="code"
+              model="editData.code"
+            />
+            <x-input
+              class="mb-4"
+              label="Grade"
+              name="grade"
+              model="editData.grade"
+            />
+            <x-input
+              class="mb-4"
+              label="Revision"
+              name="revision"
+              model="editData.revision"
+            />
+            <x-input-select 
+              label="Status"
+              name="status"
+              model="editData.status"
+              :options="[
+                  'draft' => 'Draft',
+                  'active' => 'Active',
+                  'archived' => 'Archived'
+              ]"
+            />
+          </div>
+
+          <!-- footer -->
+          <div class="flex items-center justify-end px-6 py-4 border-t">
+              <div class="flex justify-end gap-2">
+                <button 
+                    type="button" 
+                    @click="$dispatch('close')"
+                    class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100 transition">
+                    Cancel
+                </button>
+
+                <button 
+                    class="px-4 py-2 rounded-lg bg-green-600 text-white 
+                        hover:bg-green-700 transition shadow">
+                    Save
+                </button>
+            </div>
+          </div>
+        </form>
+      </x-modal>
+
+      <!-- modal delete layup -->
+      <x-modal name="delete-modal" maxWidth="md" :closeable="false">
+
+        <div class="flex items-center justify-between px-6 py-4 border-b">
+            <h2 class="text-lg font-semibold text-gray-800">
+                <span class="text-red-600">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+                Delete Layup
+            </h2>
+
+            <button 
+                type="button" 
+                @click="$dispatch('close')"
+                class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fa-solid fa-x"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <div class="mb-4">
+                <div class="text-gray-600">
+                    Are you sure you want to delete 
+                    <span class="font-semibold text-gray-800" x-text="deleteName"></span>?
+                </div>
+
+                <div class="text-xs text-gray-400 mt-2">
+                    * This action cannot be undone.
+                </div>
+            </div>
+
+            <!-- ACTION -->
+            <div class="flex justify-end gap-2 mt-6">
+                <button 
+                    type="button" 
+                    @click="$dispatch('close')"
+                    class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100 transition">
+                    Cancel
+                </button>
+
+                <form @submit.prevent="deleteLayup" >
+                    @csrf
+
+                    <button 
+                        class="px-4 py-2 rounded-lg bg-red-600 text-white 
+                            hover:bg-red-700 transition shadow">
+                        Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </x-modal>
     </div>
 </div>
 </x-app-layout>

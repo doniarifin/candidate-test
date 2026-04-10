@@ -62,7 +62,7 @@ export default function supplierPage(id = null) {
         },
 
         openDeleteModal(id, name) {
-            this.openModal("delete-supplier");
+            this.openModal("delete-modal");
             this.deleteId = id;
             this.deleteName = name;
             this.openDelete = true;
@@ -79,6 +79,13 @@ export default function supplierPage(id = null) {
         },
 
         openModal(name) {
+            window.dispatchEvent(
+                new CustomEvent("open-modal", { detail: name }),
+            );
+        },
+
+        openEditModal(name, data) {
+            console.log(this.layup);
             window.dispatchEvent(
                 new CustomEvent("open-modal", { detail: name }),
             );
@@ -231,6 +238,34 @@ export default function supplierPage(id = null) {
             }
         },
 
+        async exportLayups(ids) {
+            if (!ids?.length) {
+                this.showToast("error", "Please select at least one data!");
+                return;
+            }
+            try {
+                const res = await axios.post("/api/layups/export", {
+                    ids: ids,
+                });
+
+                const dataStr = JSON.stringify(res.data, null, 2);
+
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `suppliers-export.json`;
+                a.click();
+                this.showToast("success", "Export success!");
+            } catch (err) {
+                this.errors = err.response?.data?.message;
+                // console.log(err.response);
+                this.showToast("error", this.errors);
+                console.error(err);
+            }
+        },
+
         async createLayup() {
             this.loading = true;
             this.errors = {};
@@ -254,6 +289,76 @@ export default function supplierPage(id = null) {
             } catch (error) {
                 this.errors = error.response?.data?.errors;
                 this.showToast("error", error.response?.data?.message);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateLayup() {
+            this.loading = true;
+            this.errors = {};
+
+            try {
+                const res = await axios.put(
+                    `/api/layups/${this.editData?.id}`,
+                    this.editData,
+                );
+
+                this.editData.name = "";
+                this.editData.supplier_id = "";
+                this.editData.code = "";
+                this.editData.grade = "";
+                this.editData.revision = "";
+                this.editData.status = "";
+
+                // this.openEdit = false;
+                this.closeModal("edit-layup");
+
+                await this.getDataById();
+                // window.location.reload();
+
+                window.dispatchEvent(
+                    new CustomEvent("toast", {
+                        detail: {
+                            type: "success",
+                            message: "Layups updated!",
+                        },
+                    }),
+                );
+            } catch (error) {
+                // if (error.response.status === 422) {
+                this.errors = error.response?.data?.errors;
+                // }
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async deleteLayup() {
+            this.loading = true;
+            this.errors = {};
+
+            try {
+                await axios.delete(`/api/layups/${this.deleteId}`);
+
+                // this.openEdit = false;
+                this.closeModal("delete-modal");
+
+                await this.getDataById();
+                // window.location.reload();
+
+                window.dispatchEvent(
+                    new CustomEvent("toast", {
+                        detail: {
+                            type: "success",
+                            message: "Deleted success!",
+                        },
+                    }),
+                );
+            } catch (error) {
+                // if (error.response.status === 422) {
+                this.errors = error.response?.data?.errors;
+                // }
             } finally {
                 this.loading = false;
             }
