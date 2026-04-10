@@ -194,7 +194,7 @@
                                 <p class="text-red-500 text-sm" x-text="errors?.name?.[0]"></p>
                           </div>
 
-                          <div class="mb-4">
+                          <!-- <div class="mb-4">
                               <label class="block text-sm text-gray-600 mb-1">
                                   Supplier Code
                               </label>
@@ -206,7 +206,15 @@
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 
                                       focus:ring-2 focus:ring-green-500 focus:outline-none">
                                       <p class="text-red-500 text-sm" x-text="errors?.code?.[0]"></p>
-                          </div>
+                          </div> -->
+
+                          <x-input
+                            label="Supplier Code"
+                            name="code"
+                            placeholder="e.g. SUP-001"
+                            :model="'form.code'"
+                          >
+                          </x-input>
 
                           <div class="mb-4">
                               <label class="block text-sm text-gray-600 mb-1">
