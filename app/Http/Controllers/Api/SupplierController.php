@@ -106,18 +106,31 @@ class SupplierController extends Controller
                     'location' => $supplier->location,
                     'certifications' => $supplier->certifications,
                     'status' => $supplier->status,
+                    'created_at' => $supplier->created_at,
+                    'updated_at' => $supplier->updated_at,
                 ],
                 'layups' => $supplier->layups->map(function ($layup) {
                     return [
                         'id' => $layup->id,
                         'name' => $layup->name,
                         'code' => $layup->code,
+                        'supplier_id' => $layup->supplier_id,
+                        'grade' => $layup->grade,
+                        'revision' => $layup->revision,
+                        'status' => $layup->status,
+                        'created_at' => $layup->created_at,
+                        'updated_at' => $layup->updated_at,
                         'layers' => $layup->layers->map(function ($layer) {
                             return [
+                                'id' => $layer->id,
+                                'layup_id' => $layer->layup_id,
                                 'layer_order' => $layer->layer_order,
                                 'thickness' => $layer->thickness,
                                 'width' => $layer->width,
-                                // 'angle' => $layer->angle,
+                                'angle' => $layer->angle,
+                                'grade' => $layer->grade,
+                                'created_at' => $layer->created_at,
+                                'updated_at' => $layer->updated_at,
                             ];
                         })
                     ];

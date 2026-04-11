@@ -1,6 +1,11 @@
+import helper from "../helpers/helper";
+const h = helper();
+
 export default function supplierPage(id = null) {
     return {
-        suppliers: [],
+        suppliers: {
+            layups: [],
+        },
         openCreate: false,
         openEdit: false,
         openDelete: false,
@@ -49,20 +54,8 @@ export default function supplierPage(id = null) {
             }
         },
 
-        formatDate(date) {
-            if (!date) return "-";
-
-            const d = new Date(date);
-
-            return d.toLocaleDateString("id-ID", {
-                year: "numeric",
-                month: "short",
-                day: "2-digit",
-            });
-        },
-
         openDeleteModal(id, name) {
-            this.openModal("delete-modal");
+            h.openModal("delete-modal");
             this.deleteId = id;
             this.deleteName = name;
             this.openDelete = true;
@@ -88,17 +81,6 @@ export default function supplierPage(id = null) {
             console.log(this.layup);
             window.dispatchEvent(
                 new CustomEvent("open-modal", { detail: name }),
-            );
-        },
-
-        showToast(type, message) {
-            window.dispatchEvent(
-                new CustomEvent("toast", {
-                    detail: {
-                        type: type,
-                        message: message,
-                    },
-                }),
             );
         },
 
@@ -147,7 +129,7 @@ export default function supplierPage(id = null) {
                 this.form.status = "";
 
                 // this.openCreate = false;
-                this.closeModal("add-supplier");
+                h.closeModal("add-supplier");
 
                 await this.getData();
 
@@ -188,7 +170,7 @@ export default function supplierPage(id = null) {
                 this.editData.status = "";
 
                 // this.openEdit = false;
-                this.closeModal("edit-supplier");
+                h.closeModal("edit-supplier");
 
                 await this.getDataById();
                 // window.location.reload();
@@ -212,7 +194,7 @@ export default function supplierPage(id = null) {
 
         async exportSuppliers(ids) {
             if (!ids?.length) {
-                this.showToast("error", "Please select at least one data!");
+                h.showToast("error", "Please select at least one data!");
                 return;
             }
             try {
@@ -229,18 +211,18 @@ export default function supplierPage(id = null) {
                 a.href = url;
                 a.download = `suppliers-export.json`;
                 a.click();
-                this.showToast("success", "Export success!");
+                h.showToast("success", "Export success!");
             } catch (err) {
                 this.errors = err.response?.data?.message;
                 // console.log(err.response);
-                this.showToast("error", this.errors);
+                h.showToast("error", this.errors);
                 console.error(err);
             }
         },
 
         async exportLayups(ids) {
             if (!ids?.length) {
-                this.showToast("error", "Please select at least one data!");
+                h.showToast("error", "Please select at least one data!");
                 return;
             }
             try {
@@ -257,11 +239,11 @@ export default function supplierPage(id = null) {
                 a.href = url;
                 a.download = `suppliers-export.json`;
                 a.click();
-                this.showToast("success", "Export success!");
+                h.showToast("success", "Export success!");
             } catch (err) {
                 this.errors = err.response?.data?.message;
                 // console.log(err.response);
-                this.showToast("error", this.errors);
+                h.showToast("error", this.errors);
                 console.error(err);
             }
         },
@@ -281,14 +263,14 @@ export default function supplierPage(id = null) {
                 this.layup.revision = "";
                 this.layup.status = "";
 
-                this.closeModal("add-layup");
+                h.closeModal("add-layup");
 
                 await this.getDataById();
 
-                this.showToast("success", "Supplier created success!");
+                h.showToast("success", "Layup created success!");
             } catch (error) {
                 this.errors = error.response?.data?.errors;
-                this.showToast("error", error.response?.data?.message);
+                h.showToast("error", error.response?.data?.message);
             } finally {
                 this.loading = false;
             }
@@ -312,7 +294,7 @@ export default function supplierPage(id = null) {
                 this.editData.status = "";
 
                 // this.openEdit = false;
-                this.closeModal("edit-layup");
+                h.closeModal("edit-layup");
 
                 await this.getDataById();
                 // window.location.reload();
@@ -342,7 +324,7 @@ export default function supplierPage(id = null) {
                 await axios.delete(`/api/layups/${this.deleteId}`);
 
                 // this.openEdit = false;
-                this.closeModal("delete-modal");
+                h.closeModal("delete-modal");
 
                 await this.getDataById();
                 // window.location.reload();

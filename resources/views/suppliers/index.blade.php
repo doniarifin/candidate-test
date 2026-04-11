@@ -119,7 +119,7 @@
                                             </a>
                                         </td>
                                         <td class="p-2" x-text="supplier.layups_count"></td>
-                                        <td class="p-2" x-text="formatDate(supplier?.created_at)"></td>
+                                        <td class="p-2" x-text="$helper.formatDate(supplier?.created_at)"></td>
                                         <td class="p-2 text-center flex gap-4 justify-center ">
                                             
                                             <!-- Edit Button -->
@@ -173,7 +173,7 @@
                         type="button" 
                         @click="$dispatch('close')"
                         class="text-gray-400 hover:text-gray-600 transition">
-                        <i class="fa-solid fa-x"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
     
@@ -260,7 +260,7 @@
                         type="button" 
                         @click="$dispatch('close')"
                         class="text-gray-400 hover:text-gray-600 transition">
-                        <i class="fa-solid fa-x"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 

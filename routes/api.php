@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\LayupController;
+use App\Http\Controllers\Api\LayerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,13 @@ Route::delete('/layups/{id}', [LayupController::class, 'destroy']);
 
 //export layups
 Route::post('/layups/export', [LayupController::class, 'export']);
+
+//layer api
+Route::get('/layers', [LayerController::class, 'index']);
+Route::get('/layers/{id}', [LayerController::class, 'show']);
+Route::post('/layers', [LayerController::class, 'store']);
+Route::put('/layers/{id}', [LayerController::class, 'update']);
+Route::delete('/layers/{id}', [LayerController::class, 'destroy']);
+
+//export layers
+Route::post('/layers/export', [LayerController::class, 'export']);

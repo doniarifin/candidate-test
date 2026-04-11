@@ -79,7 +79,7 @@
 
                     <!-- close -->
                     <button @click="show = false" class="text-white opacity-70 hover:opacity-100">
-                        <i class="fa-solid fa-x"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             </div>
@@ -126,7 +126,7 @@
 
                         <!-- close -->
                         <button @click="show = false" class="text-white opacity-70 hover:opacity-100">
-                            <i class="fa-solid fa-x"></i>
+                            <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                 </div>

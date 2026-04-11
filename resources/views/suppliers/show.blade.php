@@ -4,7 +4,7 @@
 
       <!-- navlink -->
        <div class="flex items-center text-sm text-gray-500 space-x-2">
-        <a href="/suppliers" class="hover:text-gray-700 font-medium transition">
+        <a href="/suppliers" class="hover:text-gray-700 font-medium underline transition">
             Suppliers
         </a>
 
@@ -35,7 +35,7 @@
 
               <button 
                   @click="
-                      openModal('edit-supplier');
+                      $helper.openModal('edit-supplier');
                       editData = JSON.parse(JSON.stringify(supplier))
                   "
                   class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50"
@@ -68,7 +68,7 @@
               <div class="border rounded-lg p-4">
                   <p class="text-gray-400">LAST AUDIT</p>
                   <!-- <p class="font-medium">{{ $supplier->updated_at->format('M d, Y') }}</p> -->
-                  <p class="font-medium" x-text="formatDate(supplier?.updated_at)"></p>
+                  <p class="font-medium" x-text="$helper.formatDate(supplier?.updated_at)"></p>
 
               </div>
           </div>
@@ -82,9 +82,9 @@
               </h2>
 
               <div class="flex gap-2">
-                  <button class="px-3 py-2 border rounded-lg text-sm">Import</button>
+                  <button @click="$helper.openModal('modal-upload')" class="px-3 py-2 border rounded-lg text-sm">Import</button>
                   <button @click="exportLayups(selectedIds)" class="px-3 py-2 border rounded-lg text-sm">Export</button>
-                  <button @click="openModal('add-layup')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">
+                  <button @click="$helper.openModal('add-layup')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">
                       + Add Layup
                   </button>
               </div>
@@ -125,7 +125,7 @@
                           </td>
                       </tr>
                     </template>
-                    <template x-for="layup in supplier?.layups" :key="supplier.id">
+                    <template x-for="layup in (supplier?.layups || [])" :key="layup.id">
                         <tr x-show="!loading" class="border-t">
                             <!-- checkbox -->
                             <td class="p-2 text-left">
@@ -136,7 +136,7 @@
                                 >
                             </td>
                             <td class="p-2 text-left">
-                                <a :href="'/suppliers/' + supplier.id" class="text-blue-600 underline">
+                                <a :href="'/layups/' + layup.id" class="text-blue-600 underline">
                                     <span x-text="layup?.name"></span>
                                 </a>
                             </td>
@@ -170,7 +170,7 @@
                               
                                 <button
                                 >
-                                    <a :href="'/suppliers/' + supplier.id" >
+                                    <a :href="'/layups/' + layup.id" >
                                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </a>
                                 </button>
@@ -221,7 +221,7 @@
                 type="button" 
                 @click="$dispatch('close')"
                 class="text-gray-400 hover:text-gray-600 transition">
-                <i class="fa-solid fa-x"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
@@ -289,7 +289,7 @@
                           type="text" 
                           disabled
                           name="created_at"
-                          :value="formatDate(editData?.created_at)"
+                          :value="$helper.formatDate(editData?.created_at)"
                           class="w-full border border-gray-300 rounded-lg px-3 py-2 
                               focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-200"
                       >
@@ -330,7 +330,7 @@
                 type="button" 
                 @click="$dispatch('close')"
                 class="text-gray-400 hover:text-gray-600 transition">
-                <i class="fa-solid fa-x"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
@@ -411,7 +411,7 @@
                 type="button" 
                 @click="$dispatch('close')"
                 class="text-gray-400 hover:text-gray-600 transition">
-                <i class="fa-solid fa-x"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
@@ -493,7 +493,7 @@
                 type="button" 
                 @click="$dispatch('close')"
                 class="text-gray-400 hover:text-gray-600 transition">
-                <i class="fa-solid fa-x"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
@@ -531,5 +531,13 @@
         </div>
     </x-modal>
     </div>
-</div>
+
+  </div>
+  
+  <div x-data="layupManager()">
+    @include('suppliers.modal.modal-upload')
+  </div>
+  <div x-data="conflictManager()">
+    @include('suppliers.modal.modal-conflict')
+  </div>
 </x-app-layout>

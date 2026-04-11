@@ -11,7 +11,8 @@ class Layer extends Model
         'layer_order',
         'thickness',
         'width',
-        'angle'
+        'angle',
+        'grade',
     ];
 
     public function layup()

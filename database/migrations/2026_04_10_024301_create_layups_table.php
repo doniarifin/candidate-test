@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('layups', function (Blueprint $table) {
-            $table->id();
+            $table->id()->primary();;
 
             $table->foreignId('supplier_id')
                 ->constrained('suppliers')

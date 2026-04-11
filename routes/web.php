@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LayupController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,9 +22,12 @@ Route::middleware('auth')->group(function () {
 Route::resource('suppliers', SupplierController::class)
     ->middleware(['auth', 'verified']);
 
-Route::get('/layup', function () {
-    return view('pages.layup.layup');
-})->middleware(['auth', 'verified'])->name('layup');
+Route::resource('layups', LayupController::class)
+    ->middleware(['auth', 'verified']);
+
+// Route::get('/layup', function () {
+//     return view('pages.layup.layup');
+// })->middleware(['auth', 'verified'])->name('layup');
 Route::get('/layer', function () {
     return view('pages.layer.layer');
 })->middleware(['auth', 'verified'])->name('layer');

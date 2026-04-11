@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('layers', function (Blueprint $table) {
-            $table->id();
+            $table->id()->primary();;
 
             $table->foreignId('layup_id')
                 ->constrained('layups')
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('thickness', 8, 2);
             $table->decimal('width', 8, 2);
             $table->decimal('angle', 5, 2); 
+            $table->string('grade')->nullable(); 
 
             $table->timestamps();
         });
