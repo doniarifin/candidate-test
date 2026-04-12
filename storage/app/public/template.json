@@ -1,0 +1,19 @@
+[
+  {
+    "name": "TEST",
+    "code": "TEST1",
+    "grade": "AB",
+    "revision": "",
+    "status": "draft",
+    "layers": [
+      {
+        "layup_id": 1,
+        "layer_order": 1,
+        "thickness": "0.00",
+        "width": "0.00",
+        "angle": "0.00",
+        "grade": null
+      }
+    ]
+  }
+]

@@ -13,7 +13,7 @@ class ImportController extends Controller
 
     public function download()
     {
-        $path = storage_path('app/public/json_template/template.json');
+        $path = storage_path('app/public/template.json');
 
         return response()->download($path);
     }
