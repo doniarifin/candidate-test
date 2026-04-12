@@ -30,6 +30,16 @@ class LayupController extends Controller
         return response()->json($layup);
     }
 
+    public function getLayups(Request $request, $supplierId)
+    {
+        $layups = Layup::with('layers')
+            ->where('supplier_id', $supplierId)
+            ->orderBy('id')
+            ->paginate(5);
+
+        return response()->json($layups);
+    }
+
     // 
     public function store(Request $request)
     {
@@ -59,7 +69,7 @@ class LayupController extends Controller
         $validated = $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:layups,code,' . $id,
+            // 'code' => 'required|string|max:50|unique:layups,code,' . $id,
 
             'grade' => 'nullable|string|max:255',
             'revision' => 'nullable|string|max:255',
@@ -90,12 +100,12 @@ class LayupController extends Controller
                 $layup->layers()->whereIn('id', $toDelete)->delete();
             }
 
-            foreach ($validated['layers'] as $layer) {
+            foreach ($validated['layers'] as $index => $layer) {
 
                 $layup->layers()->updateOrCreate(
                     ['id' => $layer['id'] ?? null],
                     [
-                        'layer_order' => $layer['layer_order'],
+                        'layer_order' => $index + 1,
                         'thickness' => $layer['thickness'],
                         'width' => $layer['width'],
                         'angle' => $layer['angle'],

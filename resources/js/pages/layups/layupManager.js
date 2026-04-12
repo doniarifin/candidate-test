@@ -1,5 +1,4 @@
 import helpers from "../../helpers/helper";
-import conflictManager from "./conflictManager";
 const helper = helpers();
 
 export default function layupManager(id = null) {
@@ -29,6 +28,7 @@ export default function layupManager(id = null) {
             width: "",
             angle: 0,
             grade: "",
+            status: "draft",
         },
 
         layupForm: {},

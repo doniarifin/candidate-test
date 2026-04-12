@@ -125,88 +125,110 @@
                           </td>
                       </tr>
                     </template>
-                    <template x-for="layup in (supplier?.layups || [])" :key="layup.id">
-                        <tr x-show="!loading" class="border-t">
+                    @foreach ($layups as $layup)
+                        <tr class="border-t">
+
                             <!-- checkbox -->
                             <td class="p-2 text-left">
                                 <input 
                                     type="checkbox"
-                                    :value="layup.id"
+                                    :value="{{ $layup->id }}"
                                     x-model="selectedIds"
                                 >
                             </td>
+
+                            <!-- name -->
                             <td class="p-2 text-left">
-                                <a :href="'/layups/' + layup.id" class="text-blue-600 underline">
-                                    <span x-text="layup?.name"></span>
+                                <a href="/layups/{{ $layup->id }}" class="text-blue-600 underline">
+                                    {{ $layup->name }}
                                 </a>
                             </td>
-                            <td class="p-2 text-left" x-text="layup.code"></td>
-                            <td class="p-2 text-center">
-                              <span x-text="layup.total_thickness + ' mm'"></span>
+
+                            <!-- code -->
+                            <td class="p-2 text-left">
+                                {{ $layup->code }}
                             </td>
 
-                            <td class="p-2 text-center" >
-                              <span class="px-2 py-1 bg-gray-200 rounded" x-text="layup.ply_count">
-                              </span>
-                            </td>
-                            <td class="p-2 text-center" x-text="layup.grade ?? '-' "></td>
-                            <td class="p-2 text-center" x-text="layup.revision ?? '-' "></td>
+                            <!-- thickness -->
                             <td class="p-2 text-center">
-                              <span 
-                                  class="px-3 py-1 rounded-full"
-                                  :class="{
-                                      'bg-green-100 text-green-700': layup.status === 'active',
-                                      'bg-yellow-100 text-yellow-700': layup.status === 'draft',
-                                      'bg-gray-200 text-gray-600': layup.status === 'archived'
-                                  }"
-                                  x-text="
-                                      layup.status === 'active' ? 'Active' :
-                                      layup.status === 'draft' ? 'Draft' :
-                                      'Archived'
-                                  "
-                              ></span>
-                          </td>
-                            <td class="p-2 text-center flex gap-4 justify-center ">
-                              
-                                <button
-                                >
-                                    <a :href="'/layups/' + layup.id" >
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                    </a>
-                                </button>
+                                {{ $layup->total_thickness ?? 0 }} mm
+                            </td>
 
-                                <!-- Edit Button -->
+                            <!-- ply -->
+                            <td class="p-2 text-center">
+                                <span class="px-2 py-1 bg-gray-200 rounded">
+                                    {{ $layup->ply_count ?? 0 }}
+                                </span>
+                            </td>
+
+                            <!-- grade -->
+                            <td class="p-2 text-center">
+                                {{ $layup->grade ?? '-' }}
+                            </td>
+
+                            <!-- revision -->
+                            <td class="p-2 text-center">
+                                {{ $layup->revision ?? '-' }}
+                            </td>
+
+                            <!-- status -->
+                            <td class="p-2 text-center">
+                                <span class="
+                                    px-3 py-1 rounded-full
+                                    {{ $layup->status === 'active' ? 'bg-green-100 text-green-700' : '' }}
+                                    {{ $layup->status === 'draft' ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                    {{ $layup->status === 'archived' ? 'bg-gray-200 text-gray-600' : '' }}
+                                ">
+                                    {{ ucfirst($layup->status) }}
+                                </span>
+                            </td>
+
+                            <!-- actions -->
+                            <td class="p-2 text-center flex gap-4 justify-center">
+
+                                <!-- open -->
+                                <a href="/layups/{{ $layup->id }}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+
+                                <!-- edit -->
                                 <button
-                                  @click="
+                                    @click="
                                         openEditModal('edit-layup')
-                                        editData = JSON.parse(JSON.stringify(layup))
+                                        editData = {{ $layup }}
                                     "
                                 >
-                                  <i class="fa-solid fa-pen-to-square"></i>
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <!-- Delete Button -->
+                                <!-- delete -->
                                 <button 
                                     @click="
-                                        openDeleteModal(layup.id, layup.name)
+                                        openDeleteModal({{ $layup->id }}, '{{ $layup->name }}')
                                     "
-                                    class="text-red-600">
+                                    class="text-red-600"
+                                >
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
 
                             </td>
+
                         </tr>
-                    </template>
-                    <template x-if="supplier?.layups.length === 0">
-                      <tr>
-                          <td colspan="9" class="text-center p-4 text-gray-500">
-                              No layups found
-                          </td>
-                      </tr>
-                    </template>
+                    @endforeach
+                    @if ($layups->count() === 0)
+                    <tr>
+                        <td colspan="9" class="text-center p-4 text-gray-500">
+                            No layups found
+                        </td>
+                    </tr>
+                    @endif
                 </tbody>
               </table>
           </div>
+          
+            <div class="mt-4">
+                {{ $layups->links('pagination::tailwind') }}
+            </div>
 
       </div>
 
@@ -534,10 +556,12 @@
 
   </div>
   
-  <div x-data="layupManager()">
+  <div x-data="importManager({{ $supplier->id }})" x-init="init()">
     @include('suppliers.modal.modal-upload')
+    @include('suppliers.modal.modal-confirm')
   </div>
-  <div x-data="conflictManager()">
+  <div x-data="conflictManager()" x-init="init()">
     @include('suppliers.modal.modal-conflict')
+    @include('suppliers.modal.modal-warning')
   </div>
 </x-app-layout>

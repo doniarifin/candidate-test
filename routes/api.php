@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\LayupController;
 use App\Http\Controllers\Api\LayerController;
+use App\Http\Controllers\Api\ImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,8 @@ Route::post('/suppliers', [SupplierController::class, 'store']);
 Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
 Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
 
+Route::get('/suppliers', [SupplierController::class, 'search']);
+
 //export suppliers
 Route::post('/suppliers/export', [SupplierController::class, 'export']);
 
@@ -30,6 +33,8 @@ Route::get('/layups/{id}', [LayupController::class, 'show']);
 Route::post('/layups', [LayupController::class, 'store']);
 Route::put('/layups/{id}', [LayupController::class, 'update']);
 Route::delete('/layups/{id}', [LayupController::class, 'destroy']);
+
+Route::get('/supplier/{id}/layups', [LayupController::class, 'getLayups']);
 
 //export layups
 Route::post('/layups/export', [LayupController::class, 'export']);
@@ -43,3 +48,8 @@ Route::delete('/layers/{id}', [LayerController::class, 'destroy']);
 
 //export layers
 Route::post('/layers/export', [LayerController::class, 'export']);
+
+//import
+Route::post('/layups/import/preview', [ImportController::class, 'preview']);
+Route::post('/layups/import/', [ImportController::class, 'import']);
+

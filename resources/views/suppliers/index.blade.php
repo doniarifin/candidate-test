@@ -39,8 +39,9 @@
                                 <input 
                                     type="text"
                                     x-model="search"
-                                    placeholder="Search suppliers by name..."
-                                    class="w-full pl-10 text-sm pr-4 py-2 border border-gray-200 rounded-lg 
+                                    @input.debounce.400ms="searchSupplier"
+                                    placeholder="Search Supplier..."
+                                    class="w-full pl-10 text-sm pr-4 py-2 border rounded-lg
                                         focus:outline-none focus:ring-2 focus:ring-green-500"
                                 >
                             </div>
@@ -114,7 +115,7 @@
                                             >
                                         </td>
                                         <td class="p-2">
-                                            <a :href="'/suppliers/' + supplier.id" class="text-blue-600 underline">
+                                            <a :href="'/supplier/' + supplier.id + '/layups'" class="text-blue-600 underline">
                                                 <span x-text="supplier?.name"></span>
                                             </a>
                                         </td>
@@ -125,7 +126,7 @@
                                             <!-- Edit Button -->
                                             <button
                                             >
-                                                <a :href="'/suppliers/' + supplier.id" >
+                                                <a :href="'/supplier/' + supplier.id + '/layups'" >
                                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                                 </a>
                                             </button>

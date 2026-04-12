@@ -19,7 +19,7 @@ class SupplierController extends Controller
             'layups.layers'
         ])->findOrFail($id);
 
-        return view('suppliers.show', compact('supplier'));
+        return view('suppliers.layup', compact('supplier'));
     }
 
     public function create()

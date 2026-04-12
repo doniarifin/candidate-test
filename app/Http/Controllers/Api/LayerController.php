@@ -70,11 +70,25 @@ class LayerController extends Controller
 
     public function destroy($id)
     {
-        $layers = Layer::findOrFail($id);
-        $layers->delete();
+        $layer = Layer::findOrFail($id);
+
+        $layupId = $layer->layup_id; 
+
+        $layer->delete();
+
+        // reorder
+        $layers = Layer::where('layup_id', $layupId)
+            ->orderBy('layer_order')
+            ->get();
+
+        foreach ($layers as $index => $item) {
+            $item->update([
+                'layer_order' => $index + 1
+            ]);
+        }
 
         return response()->json([
-            'message' => 'layers berhasil dihapus'
+            'message' => 'layer berhasil dihapus dan reoder'
         ]);
     }
 

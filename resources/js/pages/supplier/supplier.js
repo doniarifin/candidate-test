@@ -1,4 +1,4 @@
-import helper from "../helpers/helper";
+import helper from "../../helpers/helper";
 const h = helper();
 
 export default function supplierPage(id = null) {
@@ -31,7 +31,7 @@ export default function supplierPage(id = null) {
             email: null,
             location: null,
             certifications: null,
-            status: null ?? "active",
+            status: "active",
         },
 
         //layup data
@@ -41,7 +41,7 @@ export default function supplierPage(id = null) {
             code: "",
             grade: "",
             revision: "",
-            status: null ?? "draft",
+            status: "draft",
         },
 
         errors: {},
@@ -52,6 +52,27 @@ export default function supplierPage(id = null) {
             } else {
                 this.getData();
             }
+        },
+
+        async fetchSupplier(page = 1) {
+            this.loading = true;
+            // this.suppliers = [];
+            try {
+                const response = await axios.get("/api/suppliers", {
+                    params: {
+                        search: this.search,
+                    },
+                });
+                this.suppliers = response.data.data;
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        searchSupplier() {
+            this.fetchSupplier(1);
         },
 
         openDeleteModal(id, name) {
@@ -252,6 +273,8 @@ export default function supplierPage(id = null) {
             this.loading = true;
             this.errors = {};
 
+            console.log(this.supplierId);
+
             this.layup.supplier_id = this.supplierId;
 
             try {
@@ -261,9 +284,10 @@ export default function supplierPage(id = null) {
                 this.layup.code = "";
                 this.layup.grade = "";
                 this.layup.revision = "";
-                this.layup.status = "";
+                this.layup.status = "draft";
 
                 h.closeModal("add-layup");
+                window.location.reload();
 
                 await this.getDataById();
 
@@ -291,13 +315,13 @@ export default function supplierPage(id = null) {
                 this.editData.code = "";
                 this.editData.grade = "";
                 this.editData.revision = "";
-                this.editData.status = "";
+                this.editData.status = "draft";
 
                 // this.openEdit = false;
                 h.closeModal("edit-layup");
 
                 await this.getDataById();
-                // window.location.reload();
+                window.location.reload();
 
                 window.dispatchEvent(
                     new CustomEvent("toast", {

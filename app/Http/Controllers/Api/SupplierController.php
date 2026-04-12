@@ -20,6 +20,23 @@ class SupplierController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->query('search');
+
+        $suppliers = Supplier::withCount('layups')
+            ->when($search, function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'data' => $suppliers
+        ]);
+    }
+
     public function show($id)
     {
         $supplier = Supplier::with([

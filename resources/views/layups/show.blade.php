@@ -13,7 +13,7 @@
 
         <span class="text-gray-400">/</span>
 
-        <a href="/suppliers/{{ $layup->supplier->id }}" x-text="layups?.supplier?.name" class="hover:text-gray-700 underline font-medium transition">
+        <a href="/supplier/{{ $layup->supplier->id }}/layups" x-text="layups?.supplier?.name" class="hover:text-gray-700 underline font-medium transition">
         </a>
 
         <span class="text-gray-400">/</span>

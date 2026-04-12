@@ -6,7 +6,8 @@
     'model' => null,
     'required' => false,
     'disabled' => false,
-    'errorKey' => null
+    'errorKey' => null,
+    'withPlaceholder' => false
 ])
 
 <div class="mb-4">
@@ -31,8 +32,9 @@
                focus:ring-2 focus:outline-none
                disabled:bg-gray-100 disabled:cursor-not-allowed"
     >
+        @if($withPlaceholder)
         <option :value="null">{{ $placeholder }}</option>
-
+        @endif
         <!-- Options -->
         @foreach($options as $value => $text)
             <option value="{{ $value }}">

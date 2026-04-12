@@ -25,6 +25,9 @@ Route::resource('suppliers', SupplierController::class)
 Route::resource('layups', LayupController::class)
     ->middleware(['auth', 'verified']);
 
+// Route::get('/layups/under-supplier', [LayupController::class, 'underSupplier'])->middleware(['auth', 'verified']);
+Route::get('/supplier/{id}/layups', [LayupController::class, 'underSupplier'])->middleware(['auth', 'verified']);
+
 // Route::get('/layup', function () {
 //     return view('pages.layup.layup');
 // })->middleware(['auth', 'verified'])->name('layup');
