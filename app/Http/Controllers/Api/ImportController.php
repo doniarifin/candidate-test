@@ -10,6 +10,13 @@ use App\Models\Layer;
 
 class ImportController extends Controller
 {
+
+    public function download()
+    {
+        $path = storage_path('app/public/json_template/template.json');
+
+        return response()->download($path);
+    }
     //
     public function preview(Request $request)
     {
@@ -63,66 +70,19 @@ class ImportController extends Controller
                 ->where('supplier_id', $supplierId)
                 ->first();
 
-            if (!$layup) continue;
+            $existingLayers = collect();
+            $layerOrders = array_column($row['layers'], 'layer_order');
+
+            if ($layup) {
+
+                $existingLayers = $layup->layers()
+                    ->whereIn('layer_order', $layerOrders)
+                    ->get()
+                    ->keyBy('layer_order');
+            };
 
             // get existing layer
-            $layerOrders = array_column($row['layers'], 'layer_order');
-
-            $existingLayers = $layup->layers()
-                ->whereIn('layer_order', $layerOrders)
-                ->get()
-                ->keyBy('layer_order');
-
-            // foreach ($row['layers'] as $layer) {
-
-            //     $existingLayer = $existingLayers[$layer['layer_order']] ?? null;
-
-            //     if ($existingLayer) {
-
-            //         $diff = [];
-
-            //         if ($existingLayer->thickness != $layer['thickness']) {
-            //             $diff[] = 'thickness';
-            //         }
-
-            //         if ($existingLayer->width != $layer['width']) {
-            //             $diff[] = 'width';
-            //         }
-
-            //         if ($existingLayer->angle != $layer['angle']) {
-            //             $diff[] = 'angle';
-            //         }
-
-            //         // kalau diifernt -> conflict
-            //         if (!empty($diff)) {
-            //             $conflicts[] = [
-            //                 'name' => $row['name'],
-            //                 'layup_code' => $row['code'],
-            //                 'layer_order' => $layer['layer_order'],
-            //                 'diff_fields' => $diff,
-
-            //                 'existing' => [
-            //                     'thickness' => $existingLayer->thickness,
-            //                     'width' => $existingLayer->width,
-            //                     'angle' => $existingLayer->angle,
-            //                 ],
-
-            //                 'incoming' => [
-            //                     'thickness' => $layer['thickness'],
-            //                     'width' => $layer['width'],
-            //                     'angle' => $layer['angle'],
-            //                 ],
-            //             ];
-            //         }
-            //     }
-            // }
-
-            $layerOrders = array_column($row['layers'], 'layer_order');
-
-            $existingLayers = $layup->layers()
-                ->whereIn('layer_order', $layerOrders)
-                ->get()
-                ->keyBy('layer_order');
+            
 
             $existingArr = [];
             $incomingArr = [];
@@ -133,7 +93,9 @@ class ImportController extends Controller
             foreach ($row['layers'] as $layer) {
 
                 $order = $layer['layer_order'];
-                $existingLayer = $existingLayers[$layer['layer_order']] ?? null;
+
+                $existingLayer = $existingLayers[$order] ?? null;
+                // $existingLayer = $existingLayers[$layer['layer_order']] ?? null;
 
                 
                 $incomingArr[] = [
@@ -153,15 +115,6 @@ class ImportController extends Controller
                         'angle' => (float)$existingLayer->angle,
                         'grade' => $existingLayer->angle,
                     ];
-
-                    // cek 
-                    // if (
-                    //     (float)$existingLayer->thickness !== (float)$layer['thickness'] ||
-                    //     (float)$existingLayer->width !== (float)$layer['width'] ||
-                    //     (float)$existingLayer->angle !== (float)$layer['angle']
-                    // ) {
-                    //     $hasConflict = true;
-                    // }
 
                     $diff = [];
 
@@ -201,17 +154,11 @@ class ImportController extends Controller
 
                 $issue = "{$fieldsText} mismatch on layer {$ordersText}";
 
-                // if (count($uniqueDiff) === 1) {
-                //     $issue = ucfirst($uniqueDiff[0]) . ' mismatch';
-                // } else {
-                //     $issue = $difString . ' - mismatch';
-                // }
-
                 $conflicts[] = [
                     'id' => $layup->id,
                     'name' => $row['name'],
                     'code' => $row['code'],
-                    'supplier_id' => $row['supplier_id'],
+                    'supplier_id' => $supplierId,
                     'issue' => $issue,
 
                     'existing' => $existingArr,
@@ -231,6 +178,11 @@ class ImportController extends Controller
 
     public function import(Request $request)
     {
+
+        $validated = $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+        ]);
+
         DB::beginTransaction();
 
         try {
@@ -245,13 +197,13 @@ class ImportController extends Controller
 
                 foreach ($request->data as $item) {
 
-                    $layup = Layup::where('supplier_id', $item['supplier_id'])
+                    $layup = Layup::where('supplier_id', $request->supplier_id)
                         ->where('name', $item['name'])
                         ->first();
 
                     if (!$layup) {
                         $layup = Layup::create([
-                            'supplier_id' => $item['supplier_id'],
+                            'supplier_id' => $request->supplier_id,
                             'name'        => $item['name'],
                             'code'        => $item['code'],
                             'grade'       => $item['grade'] ?? null,
@@ -284,7 +236,7 @@ class ImportController extends Controller
             if ($request->action == "overwrite") {
                 foreach ($request->data as $item) {
     
-                    $layup = Layup::where('supplier_id', $item['supplier_id'])
+                    $layup = Layup::where('supplier_id', $request->supplier_id)
                         ->where('name', $item['name'])
                         ->first();
     
@@ -297,7 +249,7 @@ class ImportController extends Controller
                         ]);
                     } else {
                         $layup = Layup::create([
-                            'supplier_id' => $item['supplier_id'],
+                            'supplier_id' => $request->supplier_id,
                             'name'        => $item['name'],
                             'code'        => $item['code'],
                             'grade'       => $item['grade'] ?? null,
@@ -336,7 +288,7 @@ class ImportController extends Controller
             if ($request->action == "overwrite") {
                 foreach ($request->data as $item) {
     
-                    $layup = Layup::where('supplier_id', $item['supplier_id'])
+                    $layup = Layup::where('supplier_id', $request->supplier_id)
                         ->where('name', $item['name'])
                         ->first();
     
@@ -349,7 +301,7 @@ class ImportController extends Controller
                         ]);
                     } else {
                         $layup = Layup::create([
-                            'supplier_id' => $item['supplier_id'],
+                            'supplier_id' => $request->supplier_id,
                             'name'        => $item['name'],
                             'code'        => $item['code'],
                             'grade'       => $item['grade'] ?? null,
@@ -394,7 +346,7 @@ class ImportController extends Controller
                     $counter = 1;
 
                     while (
-                        Layup::where('supplier_id', $item['supplier_id'])
+                        Layup::where('supplier_id', $request->supplier_id)
                             ->where('name', $newName)
                             ->exists()
                     ) {
@@ -403,7 +355,7 @@ class ImportController extends Controller
                     }
 
                     $layup = Layup::create([
-                        'supplier_id' => $item['supplier_id'],
+                        'supplier_id' => $request->supplier_id,
                         'name'        => $newName,
                         'code'        => $item['code'],
                         'grade'       => $item['grade'] ?? null,
@@ -429,7 +381,7 @@ class ImportController extends Controller
 
                 foreach ($request->newData as $item) {
     
-                    $layup = Layup::where('supplier_id', $item['supplier_id'])
+                    $layup = Layup::where('supplier_id', $request->supplier_id)
                         ->where('name', $item['name'])
                         ->first();
     
@@ -442,7 +394,7 @@ class ImportController extends Controller
                         ]);
                     } else {
                         $layup = Layup::create([
-                            'supplier_id' => $item['supplier_id'],
+                            'supplier_id' => $request->supplier_id,
                             'name'        => $item['name'],
                             'code'        => $item['code'],
                             'grade'       => $item['grade'] ?? null,

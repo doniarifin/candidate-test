@@ -41,7 +41,7 @@
               </div>
 
               <div class="flex gap-2">
-                  <button @click="duplicate()"
+                  <button @click="openModalWarning('Are you sure want to duplicate this Layup?')"
                       class="px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">
                       Duplicate
                   </button>
@@ -212,6 +212,7 @@
       
       @include('layups.partials.layer-modal')
       @include('layups.partials.delete-modal')
+      @include('layups.partials.warning-modal')
 
   </div>
 </x-app-layout>

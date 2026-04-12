@@ -50,13 +50,13 @@
                             <div class="flex items-center gap-2 ml-4">
 
                                 <!-- filter -->
-                                <button 
+                                <!-- <button 
                                     class="flex items-center gap-2 px-4 text-sm py-2 border rounded-lg 
                                         text-gray-600 hover:bg-gray-50 transition"
                                 >
                                     <i class="fa-solid fa-filter"></i>
                                     Filter
-                                </button>
+                                </button> -->
 
                                 <!-- export -->
                                 <button 

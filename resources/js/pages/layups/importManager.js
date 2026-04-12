@@ -53,33 +53,6 @@ export default function importManager(id = null) {
             );
         },
 
-        // async handleFile(e) {
-        //     const file = e.target.files[0];
-
-        //     console.log(this.action);
-
-        //     console.log(this.supplierId);
-        //     const formData = new FormData();
-        //     formData.append("file", file);
-        //     formData.append("supplier_id", this.supplierId);
-
-        //     // const res = await axios.post(
-        //     //     "/api/layups/import/preview",
-        //     //     formData,
-        //     // );
-        //     await this.preview(formData);
-
-        //     this.allPreviewData = res.data;
-        //     this.previewData = res.data.data;
-        //     this.conflicts = res.data.conflicts;
-        //     this.isCheckedConflict = true;
-        //     if (file) {
-        //         this.fileUrl = URL.createObjectURL(file);
-        //     }
-
-        //     console.log(res.data);
-        // },
-
         async handleFile(e) {
             const file = e.target.files[0];
 
@@ -217,6 +190,7 @@ export default function importManager(id = null) {
                     decisions: this.decisions,
                     action: this.action,
                     newData: this.results,
+                    supplier_id: this.supplierId,
                 });
 
                 // this.closeImport();
@@ -232,6 +206,30 @@ export default function importManager(id = null) {
                 console.log(error);
                 helper().showToast("error", error?.data?.data?.message);
             } finally {
+            }
+        },
+
+        async downloadTemplate() {
+            try {
+                const response = await axios.get("/api/download-template", {
+                    responseType: "blob",
+                });
+
+                const url = window.URL.createObjectURL(
+                    new Blob([response.data]),
+                );
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "template.json");
+
+                document.body.appendChild(link);
+                link.click();
+
+                link.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Download failed:", error);
             }
         },
     };

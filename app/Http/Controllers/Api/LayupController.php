@@ -121,6 +121,67 @@ class LayupController extends Controller
         ]);
     }
 
+    //
+    public function duplicate(Request $request, $id)
+    {
+        $layup = Layup::with('layers')->findOrFail($id);
+
+        $validated = $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:255',
+
+            'grade' => 'nullable|string|max:255',
+            'revision' => 'nullable|string|max:255',
+            'status' => 'nullable|in:draft,active,archived',
+
+            'layers' => 'nullable|array',
+            'layers.*.layer_order' => 'required|integer',
+            'layers.*.thickness' => 'required|numeric',
+            'layers.*.width' => 'required|numeric',
+            'layers.*.angle' => 'required|numeric',
+            'layers.*.grade' => 'nullable|string|max:255',
+        ]);
+
+        $baseName = $validated['name'] . ' (copy)';
+        $newName = $baseName;
+
+        $counter = 1;
+
+        while (
+            Layup::where('name', $newName)
+                ->where('supplier_id', $validated['supplier_id'])
+                ->exists()
+        ) {
+            $newName = $baseName . ' ' . $counter;
+            $counter++;
+        }
+
+        $newLayup = Layup::create([
+            'supplier_id' => $validated['supplier_id'],
+            'name' => $newName,
+            'code' => $validated['code'] ?? $layup->code,
+            'grade' => $validated['grade'] ?? $layup->grade,
+            'revision' => $validated['revision'] ?? $layup->revision,
+            'status' => $validated['status'] ?? 'draft',
+        ]);
+
+        foreach ($layup->layers as $layer) {
+            $newLayup->layers()->create([
+                'layer_order' => $layer->layer_order,
+                'thickness' => $layer->thickness,
+                'width' => $layer->width,
+                'angle' => $layer->angle,
+                'grade' => $layer->grade,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'layup berhasil diduplicate',
+            'data' => $newLayup->load('layers')
+        ]);
+    }
+
     // 
     public function destroy($id)
     {

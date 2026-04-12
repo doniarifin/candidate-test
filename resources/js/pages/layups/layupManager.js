@@ -17,6 +17,8 @@ export default function layupManager(id = null) {
         layerId: null,
         layupId: id,
 
+        warningMessage: "",
+
         loading: false,
         totalThickness: 0,
 
@@ -122,6 +124,16 @@ export default function layupManager(id = null) {
             // this.showDeleteModal = false;
         },
 
+        openModalWarning(message) {
+            this.warningMessage = message;
+            helper.openModal("warning-modal");
+        },
+
+        closeModalWarning() {
+            helper.closeModal("warning-modal");
+            this.warningMessage = "";
+        },
+
         statusClass(status) {
             return {
                 "bg-green-100 text-green-700": status === "active",
@@ -160,6 +172,38 @@ export default function layupManager(id = null) {
                 await this.getDataLuById();
 
                 helper.showToast("success", "Update layup success!");
+            } catch (error) {
+                this.errors = error.response?.data?.errors;
+                helper.showToast("error", error.response?.data?.message);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async duplicateLayup() {
+            this.loading = true;
+            this.errors = {};
+
+            this.layups.layers = [...this.revOrderLayers];
+
+            this.layupForm = this.layups;
+
+            console.log(this.layupForm);
+            // return;
+
+            try {
+                await axios.put(
+                    `/api/layups/${this.layupForm.id}/duplicate`,
+                    this.layupForm,
+                );
+
+                this.layupForm = {};
+
+                this.closeModalWarning();
+
+                await this.getDataLuById();
+
+                helper.showToast("success", "Duplicate layup success!");
             } catch (error) {
                 this.errors = error.response?.data?.errors;
                 helper.showToast("error", error.response?.data?.message);

@@ -34,6 +34,8 @@ Route::post('/layups', [LayupController::class, 'store']);
 Route::put('/layups/{id}', [LayupController::class, 'update']);
 Route::delete('/layups/{id}', [LayupController::class, 'destroy']);
 
+Route::put('/layups/{id}/duplicate', [LayupController::class, 'duplicate']);
+
 Route::get('/supplier/{id}/layups', [LayupController::class, 'getLayups']);
 
 //export layups
@@ -52,4 +54,5 @@ Route::post('/layers/export', [LayerController::class, 'export']);
 //import
 Route::post('/layups/import/preview', [ImportController::class, 'preview']);
 Route::post('/layups/import/', [ImportController::class, 'import']);
+Route::get('/download-template', [ImportController::class, 'download']);
 

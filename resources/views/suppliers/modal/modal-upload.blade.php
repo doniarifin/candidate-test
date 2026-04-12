@@ -16,6 +16,15 @@
         <!-- body -->
         <div class="p-6 space-y-5 overflow-y-auto">
 
+            <div @click="downloadTemplate" x-show="!fileUrl" class="text-center cursor-pointer">
+                <a 
+                    :href="fileUrl" 
+                    download 
+                    class="text-sm text-green-600 hover:underline "
+                >
+                    Click here to download JSON template
+                </a>
+            </div>
             <!-- upload -->
             <input 
                 type="file" 
@@ -48,9 +57,11 @@
                     download 
                     class="text-sm text-green-600 hover:underline"
                 >
-                    Preview / Download file
+                    Preview / Download imported file
                 </a>
             </div>
+
+             
 
             <!-- action -->
             <div>
